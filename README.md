@@ -18,10 +18,10 @@
 	创建一个空jQuery对象
 
 ## 二、jQuery.buildFragment
-方法jQuery.buildFragment先创建一个文档片段DocumentFragment，然后调用方法jQuery.clean将HTML代码转化为DOM元素，并储存在创建的文档对象中。文档片段DocumentFragment表示文档的一部分但不属于文档树，当把DocumentFragment插入文档树时，插入的不是DocumentFragment自身而是它的所有子孙节点，即可以一次向文档树中插入多个节点。
- 执行的关键步骤如下：
- 1、如果HTML代码符合缓存条件，则尝试从缓存对象jQuery.fragments中读取缓存的DOM元素。
- 2、创建文档片段DocumentFragment。
- 3、调用方法jQuery.clean(elems, context, fragment, scripts)将HTML代码转换为DOM元素，并储存在创建的文档片段中。
- 4、如果HTML代码符合缓存条件，则把转换后的DOM元素放入缓存对象jQuery.fragments。
- 5、最后返回文档片段和缓存状态{fragment: fragment, cacheable: cacheable}。
+方法jQuery.buildFragment先创建一个文档片段DocumentFragment，然后调用方法jQuery.clean将HTML代码转化为DOM元素，并储存在创建的文档对象中。文档片段DocumentFragment表示文档的一部分但不属于文档树，当把DocumentFragment插入文档树时，插入的不是DocumentFragment自身而是它的所有子孙节点，即可以一次向文档树中插入多个节点。<br/>
+> 执行的关键步骤如下：
+1. 如果HTML代码符合缓存条件，则尝试从缓存对象jQuery.fragments中读取缓存的DOM元素。
+1. 创建文档片段DocumentFragment。
+1. 调用方法jQuery.clean(elems, context, fragment, scripts)将HTML代码转换为DOM元素，并储存在创建的文档片段中。
+1. 如果HTML代码符合缓存条件，则把转换后的DOM元素放入缓存对象jQuery.fragments。
+1. 最后返回文档片段和缓存状态{fragment: fragment, cacheable: cacheable}。
