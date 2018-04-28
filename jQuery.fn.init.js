@@ -1,5 +1,5 @@
 // jQuery对象是一个类数组对象，含有连续的整型属性、length属性和大量的jQuery方法，jQuery对象由构造函数jQuery()创建
-// 
+
 // 定义jQuery构造函数 调用jQuery构造函数时，实际上返回的是jQuery.fn.init()的实例
 // 在jQuery构造函数内部创建并返回另一个构造函数的实例，省去了jQuery实例前面的运算符new
 var jQuery = function (selector, context) {
@@ -91,8 +91,8 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
                         // 创建过程由jQuery.buildFragment和jQuery.clean实现，方法jQuery.buildFragment的返回值格式为：
                         /**
                          * {
-                        *    fragment:含有转换后的DOM元素的文档片段，
-                        *    cacheable：HTML代码是否满足缓存条件
+                         *   fragment:含有转换后的DOM元素的文档片段，
+                         *   cacheable：HTML代码是否满足缓存条件
                          * }
                          */
                         // 如果HTML代码满足缓存条件，则在使用转换后的DOM元素时，必须先复制一份再使用，否则可以直接使用
