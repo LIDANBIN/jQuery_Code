@@ -4,7 +4,7 @@
 jQuery.buildFragment = function( args, nodes, scripts ) {
 	var fragment, cacheable, cacheresults, doc,
 	first = args[ 0 ];
-
+	// 
 	// nodes may contain either an explicit document object,
 	// a jQuery collection or context object.
 	// If nodes[0] contains a valid object to assign to doc

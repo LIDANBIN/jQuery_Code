@@ -1,5 +1,5 @@
 // jQuery对象是一个类数组对象，含有连续的整型属性、length属性和大量的jQuery方法，jQuery对象由构造函数jQuery()创建
-
+// 
 // 定义jQuery构造函数 调用jQuery构造函数时，实际上返回的是jQuery.fn.init()的实例
 // 在jQuery构造函数内部创建并返回另一个构造函数的实例，省去了jQuery实例前面的运算符new
 var jQuery = function (selector, context) {
