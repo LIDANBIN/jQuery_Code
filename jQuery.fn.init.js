@@ -49,7 +49,7 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
             if (selector.charAt(0) === "<" && selector.charAt(selector.length - 1) === ">" && selector.length >= 3) {
                 // Assume that strings that start and end with <> are HTML and skip the regex check
                 match = [null, selector, null]; // 假设是HTML
-            // 2、否则用quickExpr检测参数是不是复杂的HTML代码或#id   quickExpr = /^(?:[^#<]*(<[\w\W]+>)[^>]*$|#([\w\-]*)$)/
+            // 2、否则用quickExpr检测参数是不是复杂的HTML代码或#id   quickExpr = /^(?:[^#<]* (<[\w\W]+>) [^>]*$ | #([\w\-]*)$)/
             } else {
                 // 如果匹配成功，则数组match的第一个元素为参数selector，第二个元素为匹配的HTML代码或undefined，第三个元素为匹配的#id或undefined
                 match = quickExpr.exec(selector);
