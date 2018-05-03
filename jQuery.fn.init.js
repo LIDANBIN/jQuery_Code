@@ -11,7 +11,8 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
      * 定义了原型方法jQuery.fn.init()，负责解析参数selector和context的类型并执行相应的查找
      * 参数selector：可以是任意类型的值，但只有undefined、DOM元素、字符串、函数、jQuery对象、普通JavaScript对象是有效的。
      * 参数context：可以不传入，也可以传入DOM对象、jQuery对象或者普通JavaScript对象之一。
-     * 参数rootJQuery：包含了document对象的jQuery对象，用于document.getElementById()查找失败、selector是选择器且未指定context、selector是函数的情况。
+     * 参数rootJQuery：包含了document对象的jQuery对象，用于document.getElementById()查找失败、selector是选择器且未指定context、
+     * selector是函数的情况。
      * */
     init: function (selector, context, rootjQuery) {
         var match, elem, ret, doc;

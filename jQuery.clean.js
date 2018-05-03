@@ -78,7 +78,7 @@ jQuery.extend({
                     if (context === document) {
                         // Use the fragment we've already created for this document
                         safeFragment.appendChild(div);
-                    // 否则调用函数createSafeFragment在文档对象context上创建一个新的安全文档片段，然后插入临时div元素。
+                        // 否则调用函数createSafeFragment在文档对象context上创建一个新的安全文档片段，然后插入临时div元素。
                     } else {
                         // Use a fragment created with the owner document
                         createSafeFragment(context).appendChild(div);
@@ -101,29 +101,43 @@ jQuery.extend({
                     if (!jQuery.support.tbody) {
 
                         // String was a <table>, *may* have spurious <tbody>
-                        // 用正则表达式检查HTML代码中是否含有tbody标签
+                        // 用正则表达式检查HTML代码中是否含有tbody标签 	rtbody = /<tbody/i,
                         var hasBody = rtbody.test(elem),
-                            // 提取IE6、IE7自动插入的空tbody元素
+
+                            // ！！提取IE6、IE7自动插入的空tbody元素
+
+                            // 如果HTML代码中含有table标签，且没有tbody标签（tag = table，wrap = [0, '', '']，depth = 0，div = div）
+                            // 那么浏览器生成DOM元素时可能自动插入空tbody元素。此时div指向创建的临时div元素，
+                            // div.firstChild指向table元素，div.firstChild.childNodes则是tbody、thead、tfoot、colgroup、caption
+                            // tbody = div.firstChild.childNodes
                             tbody = tag === "table" && !hasBody ?
                                 div.firstChild && div.firstChild.childNodes :
 
                                 // String was a bare <thead> or <tfoot>
+                                // 如果HTML代码外部包裹了父标签table，且没有tbody标签，那么浏览器生成DOM元素时可能自动插入空tbody元素。
+                                // （tag = thead、tfoot...，wrap = [1, "<table>", "</table>"]，depth = 1，div = table）while循环被执行
+                                //  tbody = div.childNodes
                                 wrap[1] === "<table>" && !hasBody ?
                                     div.childNodes :
+                                    // 如果以上条件均不满足，则浏览器生成DOM元素时不会插入空的tbody元素
                                     [];
-
+                        // 遍历数组tbody，移除空tbody元素，非空tbody元素不会被移除。
                         for (j = tbody.length - 1; j >= 0; --j) {
+                            // 先判断tbody[j]是否是tbody元素，再对tbody[j]是否是空元素进行防御性检查，以防万一。
                             if (jQuery.nodeName(tbody[j], "tbody") && !tbody[j].childNodes.length) {
+                                // 移除
                                 tbody[j].parentNode.removeChild(tbody[j]);
                             }
                         }
                     }
 
                     // IE completely kills leading whitespace when innerHTML is used
+                    // 插入IE6、IE7、IE8自动剔除的前导空白符 	rleadingWhitespace = /^\s+/,
                     if (!jQuery.support.leadingWhitespace && rleadingWhitespace.test(elem)) {
+                        // 提取出HTML代码中的前导空白符创建文本节点，插入到div的第一个子元素前。
                         div.insertBefore(context.createTextNode(rleadingWhitespace.exec(elem)[0]), div.firstChild);
                     }
-
+                    // 取到转换后的DOM元素集合
                     elem = div.childNodes;
                 }
             }
@@ -132,8 +146,10 @@ jQuery.extend({
 
             // Resets defaultChecked for any radios and checkboxes
             // about to be appended to the DOM in IE 6/7 (#8060)
+            // 在IE6、IE7中修正复选框和单选按钮的选中状态
             var len;
             if (!jQuery.support.appendChecked) {
+                // 遍历转换后的DOM元素集合，在每个元素上调用函数findInputs(elem)
                 if (elem[0] && typeof (len = elem.length) === "number") {
                     for (j = 0; j < len; j++) {
                         findInputs(elem[j]);
@@ -143,6 +159,7 @@ jQuery.extend({
                 }
             }
 
+            // 合并转换后的DOM元素
             if (elem.nodeType) {
                 ret.push(elem);
             } else {
@@ -150,58 +167,65 @@ jQuery.extend({
             }
         }
 
+        // 如果传入了文档片段fragment
         if (fragment) {
+            // 初始化变量checkScriptType为一个函数，用于检测script元素是否可执行。 rscriptType = /\/(java|ecma)script/i
+            // 如果一个script元素没有指定type或者属性type的值含有/javascript后者/ecmascript，则认为是可执行的。
             checkScriptType = function (elem) {
                 return !elem.type || rscriptType.test(elem.type);
             };
+            // 遍历数组ret，提取所有（包括子元素）合法的script元素存入数组scripts，其他元素则插入文档片段fragment。
             for (i = 0; ret[i]; i++) {
+                // 如果调用jQuery.clean()方法时传入了数组scripts，并找到了合法的script元素，则将该元素从父元素中移除，然后存入数组scripts
                 if (scripts && jQuery.nodeName(ret[i], "script") && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript")) {
                     scripts.push(ret[i].parentNode ? ret[i].parentNode.removeChild(ret[i]) : ret[i]);
 
                 } else {
+                    // 提取当前元素所包含的script元素，并把其中可执行的插入数组ret，插入位置在当前位置之后，以便继续执行上面步骤的检测和提取
                     if (ret[i].nodeType === 1) {
                         var jsTags = jQuery.grep(ret[i].getElementsByTagName("script"), checkScriptType);
-
                         ret.splice.apply(ret, [i + 1, 0].concat(jsTags));
                     }
+                    // 把除了合法script元素之外的所有元素插入文档片段
                     fragment.appendChild(ret[i]);
                 }
             }
         }
 
+        // 返回转换后的DOM元素数组
         return ret;
     }
 });
 
 var nodeNames = "abbr|article|aside|audio|canvas|datalist|details|figcaption|figure|footer|" +
-        "header|hgroup|mark|meter|nav|output|progress|section|summary|time|video";
-        
-function createSafeFragment( document ) {
-	var list = nodeNames.split( "|" ),
-	safeFrag = document.createDocumentFragment();
+    "header|hgroup|mark|meter|nav|output|progress|section|summary|time|video";
 
-	if ( safeFrag.createElement ) {
-		while ( list.length ) {
-			safeFrag.createElement(
-				list.pop()
-			);
-		}
-	}
-	return safeFrag;
+function createSafeFragment(document) {
+    var list = nodeNames.split("|"),
+        safeFrag = document.createDocumentFragment();
+
+    if (safeFrag.createElement) {
+        while (list.length) {
+            safeFrag.createElement(
+                list.pop()
+            );
+        }
+    }
+    return safeFrag;
 }
 
 
 // 数组中的元素依次是：包裹的深度，包裹的父标签，父标签对应的关闭标签
 var wrapMap = {
-        option: [1, "<select multiple='multiple'>", "</select>"], // 如果是被包含在单选selector中那么option元素的selected属性会默认被设置为true
-        legend: [1, "<fieldset>", "</fieldset>"],
-        thead: [1, "<table>", "</table>"],
-        tr: [2, "<table><tbody>", "</tbody></table>"],
-        td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-        col: [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
-        area: [1, "<map>", "</map>"],
-        _default: [0, "", ""]
-    },
+    option: [1, "<select multiple='multiple'>", "</select>"], // 如果是被包含在单选selector中那么option元素的selected属性会默认被设置为true
+    legend: [1, "<fieldset>", "</fieldset>"],
+    thead: [1, "<table>", "</table>"],
+    tr: [2, "<table><tbody>", "</tbody></table>"],
+    td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+    col: [2, "<table><tbody></tbody><colgroup>", "</colgroup></table>"],
+    area: [1, "<map>", "</map>"],
+    _default: [0, "", ""]
+},
     safeFragment = createSafeFragment(document);
 
 wrapMap.optgroup = wrapMap.option;
@@ -213,4 +237,21 @@ wrapMap.th = wrapMap.td;
 // 此时测试项jQuery.support.htmlSerialize为false，解决方案是在标签<link>和<script>外包裹一层元素再转换，包裹的元素定义在wrapMap._default中。
 if (!jQuery.support.htmlSerialize) {
     wrapMap._default = [1, "div<div>", "</div>"];
+}
+
+// Used in clean, fixes the defaultChecked property
+function fixDefaultChecked(elem) {
+    if (elem.type === "checkbox" || elem.type === "radio") {
+        elem.defaultChecked = elem.checked;
+    }
+}
+// Finds all inputs and passes them to fixDefaultChecked
+function findInputs(elem) {
+    var nodeName = (elem.nodeName || "").toLowerCase();
+    if (nodeName === "input") {
+        fixDefaultChecked(elem);
+        // Skip scripts, get other children
+    } else if (nodeName !== "script" && typeof elem.getElementsByTagName !== "undefined") {
+        jQuery.grep(elem.getElementsByTagName("input"), fixDefaultChecked);
+    }
 }
