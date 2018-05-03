@@ -90,8 +90,11 @@ jQuery.buildFragment = function (args, nodes, scripts) {
 
 
 	/**↓↓↓↓-------------转化HTML代码为DOM元素 */
-	// !fragment为true可能的三种情况：1、HTML代码不符合缓存条件。2、HTML代码符合缓存条件但此时是第一次转换，没有对应的缓存。
-	// 3、HTML代码符合缓存条件但此时是第二次转换，对应的缓存是1。
+	// !fragment为true可能的三种情况：
+	// 1、HTML代码不符合缓存条件。
+	// 2、HTML代码符合缓存条件但此时是第一次转换（cacheresults = undefined， fragment = undefined），没有对应的缓存。
+	// 3、HTML代码符合缓存条件但此时是第二次转换（cacheresults = jQuery.fragments[first] = 1， fragment = undefined），对应的缓存是1。
+	// 第二次转换（cacheresults = fragment， fragment = cacheresults）
 	if (!fragment) {
 		fragment = doc.createDocumentFragment();
 		jQuery.clean(args, doc, fragment, scripts);
