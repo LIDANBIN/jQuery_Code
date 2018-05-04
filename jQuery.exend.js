@@ -22,7 +22,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 		deep = false;
 
     // Handle a deep copy situation
-    // 修正目标对象target、源对象起始下标i
+    // 如果第一个参数是布尔值，则修正第一个参数为deep，修正第二个参数为目标对象target，并期望源对象从第三个参数开始。
 	if ( typeof target === "boolean" ) {
 		deep = target;
 		target = arguments[1] || {};
@@ -31,43 +31,55 @@ jQuery.extend = jQuery.fn.extend = function() {
 	}
 
 	// Handle case when target is a string or something (possible in deep copy)
+	// 如果目标对象target不是对象也不是函数，而是字符串或者其他的基本类型，则统一替换成空对象{}，因为在基本对象上设置非原生属性是无效的。
 	if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
 		target = {};
 	}
 
 	// extend jQuery itself if only one argument is passed
+	// 如果没有传入源对象，则把jQuery或jQuery.fn作为目标对象，并把传入的对象当做源对象
+	// length等于i可能的两种情况：1、只传入了一个参数 2、传入了两个参数，第一个是布尔值
 	if ( length === i ) {
 		target = this;
-		--i;
+		--i; // 此时i = 0或1
 	}
 
+	// 逐个遍历源对象 循环变量i表示源对象开始的下标 （牛逼）
 	for ( ; i < length; i++ ) {
 		// Only deal with non-null/undefined values
+		// 过滤掉值为null或者undefined的元素
 		if ( (options = arguments[ i ]) != null ) {
 			// Extend the base object
+			// 遍历单个源对象的属性
 			for ( name in options ) {
 				src = target[ name ];
 				copy = options[ name ];
 
 				// Prevent never-ending loop
+				// 如果复制值和目标值相等，为了避免深度遍历时死循环，因此不会覆盖目标对象的同名属性。
 				if ( target === copy ) {
 					continue;
 				}
 
 				// Recurse if we're merging plain objects or arrays
+				// 如果是深度合并，且赋值值copy是普通JavaScript对象或数组，则递归合并。
 				if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
+					// 修正原始值副本clone
+					// copy是数组
 					if ( copyIsArray ) {
 						copyIsArray = false;
 						clone = src && jQuery.isArray(src) ? src : [];
-
+					// copy是对象
 					} else {
 						clone = src && jQuery.isPlainObject(src) ? src : {};
 					}
 
 					// Never move original objects, clone them
+					// 先把copy值递归合并到原始值副本clone中，然后覆盖目标对象的同名属性。
 					target[ name ] = jQuery.extend( deep, clone, copy );
 
 				// Don't bring in undefined values
+				// 如果不是深度合并，且复制值copy不是undefined，则直接覆盖目标对象的同名属性。
 				} else if ( copy !== undefined ) {
 					target[ name ] = copy;
 				}
