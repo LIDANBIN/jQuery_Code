@@ -54,9 +54,9 @@ jQuery.extend({
             // 如果elem是字符串，即HTML代码，则开始转换HTML代码为DOM元素。
             if (typeof elem === "string") {
                 // 如果标签中不包含字符代码、数字代码和标签代码，则调用原生方法document.createTextNode()创建文本节点。
-                if (!rhtml.test(elem)) { // 	rhtml = /<|&#?\w+;/
+                if (!rhtml.test(elem)) { // 	rhtml = /<|&#?\w+;/ 1、文本节点
                     elem = context.createTextNode(elem);
-                } else {
+                } else { // 2、一组元素集合
                     // Fix "XHTML"-style tags in all browsers
                     // 修正自关闭标签 rxhtmlTag = / < (?!area|br|col|embed|hr|img|input|link|meta|param) ( ([\w:]+) [^>]*) \/ > /ig
                     // ?!p是反前向声明，要求接下来的字符不与模式p匹配
@@ -188,7 +188,6 @@ jQuery.extend({
                 // 如果调用jQuery.clean()方法时传入了数组scripts，并找到了合法的script元素，则将该元素从父元素中移除，然后存入数组scripts
                 if (scripts && jQuery.nodeName(ret[i], "script") && (!ret[i].type || ret[i].type.toLowerCase() === "text/javascript")) {
                     scripts.push(ret[i].parentNode ? ret[i].parentNode.removeChild(ret[i]) : ret[i]);
-
                 } else {
                     // 提取当前元素所包含的script元素，并把其中可执行的插入数组ret，插入位置在当前位置之后，以便继续执行上面步骤的检测和提取
                     if (ret[i].nodeType === 1) {

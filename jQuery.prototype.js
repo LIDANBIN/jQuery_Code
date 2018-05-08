@@ -48,10 +48,24 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
 
 	// Take an array of elements and push it onto the stack
 	// (returning the new matched element set)
+	// 原型方法.pushStack()创建一个新的空jQuery对象，然后把DOM元素集合放入这个jQuery对象中，并保留对当前jQuery对象的引用。 用于入栈。
+	/**
+	 *  原型方法.pushStack()是核心方法之一，它为以下方法提供支持：
+		1、jQuery对象遍历：eq()、last()、first()、slice()、map()
+		2、DOM查找、过滤：find()、not()、filter()、closest()、add()、andSelf()
+		3、DOM遍历：parent()、parents()、parentsUntil()、next()、prev()、nextAll()、prevAll()、nextUnit()、prevUnit()、
+		siblings()、children()、contents()
+		4、DOM插入：jQuery.before()、jQuery.after()、jQuery.replaceWith()、append()、prepent()、before()、after()、replaceWith() 
+	*/
 	pushStack: function( elems, name, selector ) {
+		/* 接收三个参数：
+		1、elems：将放入新jQuery对象的元素数组（或类数组对象）。
+		2、name：产生元素数组elems的jQuery方法名。
+		3、selector：传给jQuery方法的参数，用于修正原型属性selector。 */
 		// Build a new jQuery matched element set
-		var ret = this.constructor();
+		var ret = this.constructor(); // 相当于jQuery() 创建一个新的空jQuery对象。
 
+		// 把参数elems合并到新jQuery对象ret中。
 		if ( jQuery.isArray( elems ) ) {
 			push.apply( ret, elems );
 
@@ -60,10 +74,13 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
 		}
 
 		// Add the old object onto the stack (as a reference)
+		// 在新jQuery对象ret上设置属性prevObject，指向当前jQuery对象，从而形成一个链式栈。】
+		// 因此该方法也可以理解为：构建一个新的jQuery对象并入栈，新对象位于栈顶。
 		ret.prevObject = this;
 
 		ret.context = this.context;
 
+		// 在新jQuery对象ret上设置属性selector，该属性不一定是合法的选择器表达式，更多的是为了方便调试。
 		if ( name === "find" ) {
 			ret.selector = this.selector + ( this.selector ? " " : "" ) + selector;
 		} else if ( name ) {
@@ -84,7 +101,7 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
 	ready: function( fn ) {},
 
 	eq: function( i ) {
-		i = +i;
+		i = +i; // 转换为数字
 		return i === -1 ?
 			this.slice( i ) :
 			this.slice( i, i + 1 );
@@ -99,8 +116,10 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
 	},
 
 	slice: function() {
+		// 先借用数组方法slice()从当前jQuery对象中获取指定范围的子集，再调用pushStack方法将子集转换为jQuery对象，
+		// 同时通过属性prevObject保留了对当前jQuery对象的引用。
 		return this.pushStack( slice.apply( this, arguments ),
-			"slice", slice.call(arguments).join(",") );
+			"slice", slice.call(arguments).join(",") ); // 将新jQuery对象的selector修正 例如：div.slice(1, 2)
 	},
 
     // 遍历当前jQuery对象，在每个元素上执行回调函数，并将回调函数的返回值放入一个新的jQuery对象中。
@@ -112,13 +131,16 @@ jQuery.fn = jQuery.prototype = { // 构造函数jQuery的原型对象 fn是proto
 			return callback.call( elem, i, elem ); // 为了修正this，将this指向数组的当前元素后者对象的当前属性。
 		}));
 	},
-
+	// 方法.end()结束当前链条中最近的查询操作，并将匹配元素集合还原为之前的状态。
+	// .end()用于出栈。
 	end: function() {
+		// 返回前一个jQuery对象，如果属性prevObject不存在，则构建一个空的jQuery对象返回。
 		return this.prevObject || this.constructor(null);
 	},
-
+	
 	// For internal use only.
 	// Behaves like an Array's method, not like a jQuery method.
+	// 方法.push()、.sort()、.splice()仅在内部使用，都指向同名的数组方法，因此他们的参数、功能和返回值与数组方法完全一致。
 	push: push,
 	sort: [].sort,
 	splice: [].splice
